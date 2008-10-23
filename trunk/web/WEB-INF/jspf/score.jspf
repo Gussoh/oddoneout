@@ -1,0 +1,73 @@
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
+<%@page import="model.*, controller.OddOneOut, java.util.*, java.text.*" %>
+
+<%
+// Only callable from servlet.
+            response.setHeader("Cache-Control", "no-cache, must-revalidate");
+            response.setHeader("Expires", "Sat, 26 Jul 1997 05:00:00 GMT");
+            NumberFormat nf = NumberFormat.getPercentInstance();
+            GameState gameState = (GameState) session.getAttribute(OddOneOut.ATTRIBUTE_GAME_STATE);
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html>
+    <head>
+        <link rel="Stylesheet" href="style.css" type="text/css" media="all" />
+        <title>Odd one out - Score</title>
+    </head>
+    <body>
+        <h1>Game Finished!</h1>
+        <div>
+            Correct Answers: <%= gameState.getNumCorrect() + " of " + gameState.getNumQuestions() +
+                        " (" + nf.format(gameState.getCorrectRatio()) + ")"%>
+        </div>
+        
+        <form action="" method="post">
+            <input type="hidden" name="<%=OddOneOut.PARAMETER_INVALIDATE%>" value="true" />
+            <input type="hidden" name="<%=OddOneOut.ATTRIBUTE_KEY%>" value="<%= session.getAttribute(OddOneOut.ATTRIBUTE_KEY)%>"/>
+            <input class="newGameButton" type="submit" value="New Game" />
+        </form>
+        
+        <div class="questionAnswers">
+            <%
+            for (int i = 0; i < gameState.getNumQuestions(); i++) {
+                Question q = gameState.getQuestions().get(i);
+                String correctOrIncorrect = "incorrect";
+                if (gameState.getQuestionToAnswerMap().get(q) == q.getCorrectIndex()) {
+                    correctOrIncorrect = "correct";
+                }
+
+            %>
+            
+            <div class="questionAnswer <%=correctOrIncorrect%>"><div class="string">Common word: <span class="string"><%= q.getString()%></span></div>
+                
+                    <%
+                for (int j = 0; j < q.getQuestionImages().size(); j++) {
+                    QuestionImage questionImage = q.getQuestionImages().get(j);
+                    String correctOrWrong = "";
+                    if (gameState.getQuestionToAnswerMap().get(q) == j) {
+                        correctOrWrong = " wrong";
+                    }
+
+                    if (q.getCorrectIndex() == j) {
+                        correctOrWrong = " correct";
+                    }
+
+                    %>
+                    <a href="<%= questionImage.getWebPage() %>">
+                        <img class="image<%=correctOrWrong%>" src="image?<%=OddOneOut.PARAMETER_QUESTION%>=<%=i%>&<%=OddOneOut.PARAMETER_ANSWER%>=<%=j%>"/>
+                    </a>
+                    <%
+                }
+                    %>
+                
+            </div>
+            
+            <%
+
+            }
+            %>
+        </div>
+        
+    </body>
+    
+</html>

@@ -1,0 +1,77 @@
+<%-- 
+    Document   : whostheshooter
+    Created on : Oct 10, 2008, 3:08:04 PM
+    Author     : p62287946
+--%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="model.*" %>
+<%@ page import="controller.*" %>
+<%
+            response.setHeader("Cache-Control", "no-cache, must-revalidate");
+            response.setHeader("Expires", "Sat, 26 Jul 1997 05:00:00 GMT");
+
+            GameState gameState = (GameState) session.getAttribute(OddOneOut.ATTRIBUTE_GAME_STATE);
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+
+<html>
+    <head>
+        <script>
+            var images = new Array();
+            var currentHeight = new Array();
+            var height = new Array();
+            //var width = new Array();
+            var counter = 0;
+            
+            function imageEffect(image) {
+                images[counter] = image;
+                currentHeight[counter] = 0.0;
+                height[counter] = parseInt(image.height, 10);
+                //width[counter] = parseInt(image.width, 10);
+                image.height = 0;
+                image.style.visibility = 'visible';
+                counter++;
+            }
+            
+            function effect() {
+                for(i in images) {
+                    if(images[i] != null) {
+                        currentHeight[i] = (currentHeight[i] + 0.1);
+                        if(currentHeight[i] >= 2.20) {
+                            images[i].height = height[i];
+                            images[i] = null;
+                        }
+                        
+                        images[i].height = Math.sin(currentHeight[i]) * 1.2 * height[i];
+                        //images[i].width = width[i];
+                    }
+                }
+            }
+            
+            setInterval("effect()", 20);
+        </script>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Odd one out</title>
+        <link rel="Stylesheet" href="style.css" type="text/css" media="all" />
+    </head>
+    <body>
+        
+        <form action="" method="post" name="guess">
+            <input type="hidden" name="<%=OddOneOut.PARAMETER_ANSWER%>"/>
+            <input type="hidden" name="<%=OddOneOut.ATTRIBUTE_KEY%>" value="<%= session.getAttribute(OddOneOut.ATTRIBUTE_KEY)%>"/>
+        </form>
+        <h1>Click the odd image</h1>
+        <div class="questionNumber">Question <%= gameState.getCurrentQuestionIndex() + 1%> of <%= gameState.getNumQuestions()%> </div>
+        <div class="images">
+            <%
+            int i = 0;
+            for (QuestionImage m : gameState.getCurrentQuestion().getQuestionImages()) {
+            %>
+            <img style="visibility:hidden" onLoad="imageEffect(this)" class="image" src="image?<%= OddOneOut.PARAMETER_ANSWER%>=<%=i%>" alt="Is this the odd one?" onClick="document.guess.<%=OddOneOut.PARAMETER_ANSWER%>.value = '<%=i%>'; document.guess.submit();" />
+            <%
+                i++;
+            }
+            %>
+        </div>
+    </body>
+</html>
