@@ -33,7 +33,7 @@ public class GameState {
      * After this method returns, getCurrentQuestion will return a new question.
      * @param answer
      */
-    public void answerQuestionAndCreateNext(int answer) throws QuestionProviderException {
+    public synchronized void answerQuestionAndCreateNext(int answer) throws QuestionProviderException {
         if (answer < 0 || answer >= getCurrentQuestion().getQuestionImages().size()) {
             throw new IllegalStateException("Illegal answer index.");
         }
@@ -56,7 +56,7 @@ public class GameState {
      * Returns current Question or null if game is finished.
      * @return
      */
-    public Question getCurrentQuestion() {
+    public synchronized Question getCurrentQuestion() {
         if (isGameFinished()) {
             return null;
         }
@@ -67,7 +67,7 @@ public class GameState {
      * Returns current question index. starts at 0.
      * @return the index.
      */
-    public int getCurrentQuestionIndex() {
+    public synchronized int getCurrentQuestionIndex() {
         return currentQuestionIndex;
     }
 
@@ -75,7 +75,7 @@ public class GameState {
      * 
      * @return total number of questions to be answered before the game is finished.
      */
-    public int getNumQuestions() {
+    public synchronized int getNumQuestions() {
         return numQuestions;
     }
 
@@ -83,19 +83,19 @@ public class GameState {
      * 
      * @return true if game is finished, otherwise false.
      */
-    public boolean isGameFinished() {
+    public synchronized boolean isGameFinished() {
         return currentQuestionIndex >= numQuestions;
     }
 
-    public Map<Question, Integer> getQuestionToAnswerMap() {
+    public synchronized Map<Question, Integer> getQuestionToAnswerMap() {
         return questionToAnswerMap;
     }
 
-    public List<Question> getQuestions() {
+    public synchronized List<Question> getQuestions() {
         return questions;
     }
     
-    public int getNumCorrect() {
+    public synchronized int getNumCorrect() {
         int correctAnswered = 0;
         for (Map.Entry<Question, Integer> entry : questionToAnswerMap.entrySet()) {
             if(entry.getValue() == entry.getKey().getCorrectIndex()) {
@@ -105,12 +105,12 @@ public class GameState {
         return correctAnswered;
     }
     
-    public double getCorrectRatio() {
+    public synchronized double getCorrectRatio() {
         return ((double) getNumCorrect()) / getNumQuestions();
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         StringBuilder sb = new StringBuilder("\nCurrentQuestionIndex: \t").append(currentQuestionIndex);
         sb.append("\nNumber of question: \t").append(numQuestions);
         sb.append("\nQuestion provider: \t").append(questionProvider);
