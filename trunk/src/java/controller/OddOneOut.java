@@ -58,7 +58,7 @@ public class OddOneOut extends HttpServlet {
         // First time
         if (data == null) {
             try {
-                gameState = new GameState(questionProvider, 2);
+                gameState = new GameState(questionProvider, 5);
                 session.setAttribute(ATTRIBUTE_KEY, Integer.toHexString((int) (Math.random() * Integer.MAX_VALUE)));
             } catch (QuestionProviderException ex) {
                 showErrorPage(ex, request, response);
