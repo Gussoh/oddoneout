@@ -12,6 +12,7 @@ import com.aetrion.flickr.photos.SearchParameters;
 import com.aetrion.flickr.tags.Tag;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,7 +22,16 @@ import java.util.List;
  */
 public class FlickrQuestionProvider extends QuestionProvider {
 
-    private int numberOfImages = 4;
+    private int numberOfImages = 7;
+    private HashSet<String> usedTags = new HashSet<String>();
+
+    public FlickrQuestionProvider() {
+        usedTags.add("iPhotoRating0");
+        usedTags.add("iPhotoRating1");
+        usedTags.add("iPhotoRating2");
+        usedTags.add("iPhotoRating3");
+        usedTags.add("iPhotoRating4");
+    }
 
     @Override
     protected Question createQuestion() throws QuestionProviderException {
@@ -53,6 +63,18 @@ public class FlickrQuestionProvider extends QuestionProvider {
                     for (Iterator it = photoInfo.getTags().iterator(); it.hasNext();) {
                         Tag t = (Tag) it.next();
                         System.out.println("tag: " + t.getValue() + " raw: " + t.getRaw());
+                        if(usedTags.contains(t.getValue())) {
+                            if(usedTags.size() > 500) {
+                                usedTags.clear();
+                                System.out.println("Too many tags in used tags hash, clearing database...");
+                            }
+                            
+                            System.out.println("Tag already used. Trying next...");
+                            continue;
+                        } else {
+                            usedTags.add(t.getValue());
+                            // we add this even though it might not be used. this is to avoid searching for tags we already know are not good
+                        }
                         SearchParameters sp = new SearchParameters();
                         sp.setTags(new String[]{t.getValue()});
                         sp.setSort(SearchParameters.INTERESTINGNESS_DESC);
