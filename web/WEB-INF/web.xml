@@ -7,7 +7,8 @@
     <servlet>
         <servlet-name>oddoneout</servlet-name>
         <servlet-class>controller.OddOneOut</servlet-class>
-    </servlet>
+        <load-on-startup>1</load-on-startup>
+        </servlet>
     <servlet>
         <servlet-name>errorPage</servlet-name>
         <jsp-file>/WEB-INF/jspf/error.jspf</jsp-file>
