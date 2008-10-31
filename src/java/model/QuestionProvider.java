@@ -24,6 +24,9 @@ public abstract class QuestionProvider {
      */
     public QuestionProvider(int prefetchSize) {
         questionCache = new LinkedBlockingQueue<Question>(prefetchSize);
+    }
+    
+    public void startNewFetchingThread() {
         new Thread(new PrefetchThread()).start();
     }
 

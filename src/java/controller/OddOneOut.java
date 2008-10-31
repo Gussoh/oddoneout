@@ -28,6 +28,10 @@ public class OddOneOut extends HttpServlet {
     public static final String PARAMETER_INVALIDATE = "invalidate";
     public static final String PARAMETER_QUESTION = "q";
 
+    public OddOneOut() {
+        questionProvider.startNewFetchingThread();
+    }
+    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
